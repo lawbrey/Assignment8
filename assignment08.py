@@ -113,4 +113,9 @@ def main():
             print(f"Error when searching {query}")
 
 
-main()
+if __name__ == '__main__':
+    #main()
+    print(type(LocalDictionary().search("ace").word))
+    print(hasattr(LocalDictionary, "search"))
+    print(LocalDictionary("dictionary.json").dictionary)
+
