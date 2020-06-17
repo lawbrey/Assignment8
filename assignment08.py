@@ -1,3 +1,9 @@
+"""
+Luke Awbrey
+CS3B, Assignment #8, Local Dictionary
+6/3/2020
+"""
+
 from datalist import *
 import json
 from enum import Enum
@@ -25,11 +31,16 @@ class LocalDictionary:
     def __init__(self, dictionary_json_name="dictionary.json"):
         self.dictionary = {}
         with open(dictionary_json_name) as file:
-            json.load(file, object_hook=self.my_decode)
+            data = json.load(file, object_hook=self.my_decode)
+            for entry in data["entries"]:
+                if isinstance(entry, DictionaryEntry):
+                    self.dictionary[entry.word] = entry
 
     def my_decode(self, o):
         if "word" in o:
-            self.dictionary[o["word"]] = DictionaryEntry(**o)
+            return DictionaryEntry(**o)
+        else:
+            return o
 
     def search(self, word):
         return self.dictionary[word]
@@ -37,7 +48,6 @@ class LocalDictionary:
 
 class DictionaryEntryCache(DataList):
     def __init__(self, capacity=10):
-        # self.local_dictionary = LocalDictionary()
         super().__init__()
         self.count = 0
         if capacity >= 1:
@@ -79,14 +89,14 @@ class DictionarySource(Enum):
     CACHE = 2
 
     def __str__(self):
-        return f"(Found in {self.name})"
+        return f"(Found in {self.name})\n"
 
 
 class Dictionary:
 
     def __init__(self):
         self.loc_dict = LocalDictionary()
-        self.dict_entry_cache = DictionaryEntryCache(1)
+        self.dict_entry_cache = DictionaryEntryCache()
 
     def search(self, word):
         try:
@@ -105,17 +115,13 @@ def main():
     NEWLINE = "\n"
     dictionary = Dictionary()
     while True:
-        query = input("Enter a word to look up: ")
+        query = input(NEWLINE + "Enter a word to look up: ")
         try:
             for output in dictionary.search(query):
-                print(output)
+                print(output, end='')
         except KeyError:
             print(f"Error when searching {query}")
 
 
 if __name__ == '__main__':
-    #main()
-    print(type(LocalDictionary().search("ace").word))
-    print(hasattr(LocalDictionary, "search"))
-    print(LocalDictionary("dictionary.json").dictionary)
-
+    main()
